@@ -7,16 +7,18 @@ import {
   StyleSheet,
   Dimensions,
   ImageBackground,
-  SafeAreaView
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView
 } from 'react-native';
 import Swiper from "react-native-swiper"
 import LinearGradient from 'react-native-linear-gradient';
 
 var {height, width} = Dimensions.get('window');
-const baseUrl = "http://192.168.0.105:8000"
-const baseUrlImage = "http://192.168.0.105:8000/storage/"
+const baseUrl = "http://172.16.0.170:8000"
+const baseUrlImage = "http://172.16.0.170:8000/storage/"
 
-export default class App1 extends Component{
+export default class Main extends Component{
 
   constructor(props)
   {
@@ -25,11 +27,31 @@ export default class App1 extends Component{
        dataNews:[],
        message: "Hello",
        dataBanner:[],
-
+       selectTheme:0
      }
   }
-  componentDidMount(){
 
+  // static navigationOptions = ({ navigation }) => {
+  //   return {
+  //       headerTitle: (
+  //         <View style={{ flex: 1,backgroundColor:'transparent',alignItems:'center' }}>
+  //             {/* <Image
+  //             resizeMode="contain"
+  //             style={{ width:width/3,height: '90%'  }}
+  //             source={{uri: "https://www.tutofox.com/wp-content/uploads/2019/10/font_rend.png"}}
+  //           /> */}
+  //           <Text>
+               
+  //           </Text>
+  //         </View>
+          
+  //         ),
+  //       headerTitleStyle: {flex: 1, textAlign: 'center', justifyContent:'center'},
+  //       headerStyle: { backgroundColor:"#f2f2f2" },
+  //     };
+  //   };
+    
+  componentDidMount(){
     return fetch(baseUrl+"/api/news")
     .then((response) => response.json())
     .then((responseJson) => {
@@ -50,13 +72,14 @@ export default class App1 extends Component{
 
   }
   render(){
+
     console.log('dataString',this.state.dataNews.theme)
     return(
-      
+      <ScrollView>
       <SafeAreaView style={{flex:1,backgroundColor:'#f8f8f8'}}>
-        <View style={styles.headernews}>
+      {/* <View style={styles.headernews}>
           <Image style={styles.logonews} source={ { uri: "https://www.tutofox.com/wp-content/uploads/2019/10/font_rend.png"}} />
-        </View>
+        </View> */}
         <View style={{height:200}}>
           <Swiper>
             {this.state.dataBanner.map((itemimag)=>{
@@ -76,27 +99,39 @@ export default class App1 extends Component{
           horizontal={true}
           data={this.state.dataNews.theme}
           keyExtractor={(item, index) => item.id}
-          renderItem={this._renderItemTheme}
+          // renderItem={this._renderItemTheme}
+          renderItem={({item})=>this._renderItemTheme(item)}
           />
         </View>
 
         <FlatList
           data={this.state.dataNews.news}
           keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
+          renderItem={({item})=>this._renderItem(item)}
           />
       </SafeAreaView>
+      </ScrollView>
     
     )
   } 
 
-  _renderItemTheme = ({item}) => (
-    <View style={styles.divtheme}>
-      <Text style={styles.textTheme}>{item.name}</Text>
-    </View>
+  _renderItemTheme = (item) => (
+    // item o day la theme 
+    <TouchableOpacity onPress={()=>this.setState({selectTheme:item.id})}>
+      {/* cham vao phan tu nao se lap tuc set id cua phan tu do cho selectTheme */}
+      <View style={this.state.selectTheme==item.id?styles.divtheme:styles.divtheme2}>
+         <Text style={this.state.selectTheme==item.id?styles.textTheme:styles.textTheme2}> {item.name} </Text>
+      </View>
+    </TouchableOpacity>
   )
-  _renderItem = ({item}) => (
-    <View style={[styles.divnews,styles.shadows]}>
+
+  _renderItem(item){
+
+    if (this.state.selectTheme==item.theme||this.state.selectTheme==0) {
+
+    return(  
+      <TouchableOpacity onPress={(item)=>this.props.navigation.navigate("Details",{"news":item}) }>
+      <View style={[styles.divnews,styles.shadows]}>
       <Image style={styles.imagenew} source={{
         // uri : baseUrl+"storage/"+item.image
          uri: baseUrlImage+item.image
@@ -111,15 +146,25 @@ export default class App1 extends Component{
         <Text> {item.created_at}</Text>
       </View>
     </View>
-  );
+    </TouchableOpacity>
+    )
+    }
+  }
 
 }
 const styles = StyleSheet.create({
-  imagenew: {
-    width: width/3,
-    height: width/3,
-    resizeMode: 'cover',
+  imagenew:{
+    width:width/3,
+    height:width/3,
+    resizeMode:'cover',
     borderRadius:5
+  },
+  shadows:{
+    elevation:4,
+    shadowOpacity:0.3,
+    shadowRadius:50,
+    shadowColor:'gray',
+    shadowOffset: { height:0, width:0 }
   },
   divnews:{
     width:width-10,
@@ -128,19 +173,12 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     borderRadius:5
   },
-  shadows:{
-    elevation:4,
-    shadowOpacity: 0.3,
-    shadowRadius: 50,
-    shadowColor: 'gray',
-    shadowOffset: { height: 0, width: 0 },
-  },
   titleNews:{
     width:((width/3)*2)-20,
     fontSize:22
   },
   themeNews:{
-    color: "#c2191c",
+    color:"#c2191c",
     fontSize:20
   },
   headernews:{
@@ -153,7 +191,7 @@ const styles = StyleSheet.create({
   logonews:{
     height:45,
     width:width/3,
-    resizeMode: 'contain',
+    resizeMode:'contain'
   },
   textBanner:{
     fontSize:25,
@@ -164,4 +202,24 @@ const styles = StyleSheet.create({
     justifyContent:"flex-end",
     padding:10
   },
-});
+  divtheme:{
+    height:42,
+    borderTopWidth:3,
+    padding:10,
+    borderColor:'#c2191c',
+    backgroundColor:'white'
+  },
+  divtheme2:{
+    height:41,
+    borderBottomWidth:2,
+    borderColor:'#c2191c',
+    padding:10,
+    backgroundColor:'#343434'
+  },
+  textTheme:{
+    color:'black'
+  },
+  textTheme2:{
+    color:'white'
+  }
+})
