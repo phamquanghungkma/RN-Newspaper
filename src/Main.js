@@ -15,8 +15,8 @@ import Swiper from "react-native-swiper"
 import LinearGradient from 'react-native-linear-gradient';
 
 var {height, width} = Dimensions.get('window');
-const baseUrl = "http://172.16.0.170:8000"
-const baseUrlImage = "http://172.16.0.170:8000/storage/"
+const baseUrl = "http://192.168.0.104:8000"
+const baseUrlImage = "http://192.168.0.104:8000/storage/"
 
 export default class Main extends Component{
 
