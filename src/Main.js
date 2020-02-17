@@ -15,8 +15,8 @@ import Swiper from "react-native-swiper"
 import LinearGradient from 'react-native-linear-gradient';
 
 var {height, width} = Dimensions.get('window');
-const baseUrl = "http://192.168.0.104:8000"
-const baseUrlImage = "http://192.168.0.104:8000/storage/"
+const baseUrl = "http://172.16.0.170:8000"
+const baseUrlImage = "http://172.16.0.170:8000/storage/"
 
 export default class Main extends Component{
 
@@ -84,7 +84,7 @@ export default class Main extends Component{
           <Swiper>
             {this.state.dataBanner.map((itemimag)=>{
               return(
-                <ImageBackground style={{width:width,height:200}} source={{uri:  baseUrlImage+itemimag.image }}>
+                <ImageBackground style={{width:width,height:200}} source={{uri: baseUrlImage+itemimag.image }}>
                   <LinearGradient style={styles.fontBanner} colors={[ 'transparent', 'black']} >
                     <Text style={styles.textBanner} numberOfLines={2}>{itemimag.title}</Text>
                   </LinearGradient>
@@ -128,9 +128,10 @@ export default class Main extends Component{
   _renderItem(item){
 
     if (this.state.selectTheme==item.theme||this.state.selectTheme==0) {
-
+        
     return(  
-      <TouchableOpacity onPress={(item)=>this.props.navigation.navigate("Details",{"news":item}) }>
+      <TouchableOpacity onPress={(item)=>this.props.navigation.navigate("Details",{news:item}) }>
+        {console.log('dulieugui',item)}
       <View style={[styles.divnews,styles.shadows]}>
       <Image style={styles.imagenew} source={{
         // uri : baseUrl+"storage/"+item.image

@@ -27,6 +27,7 @@ export default class DetailsScreen extends React.Component {
 
   render() {
     const data = this.props.navigation.getParam('news')
+    console.log('du lieu nhan ',data)
     return (
       <ScrollView>
         <View style={{ flex: 1}}>
