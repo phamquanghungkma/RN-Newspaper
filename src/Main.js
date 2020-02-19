@@ -13,10 +13,11 @@ import {
 } from 'react-native';
 import Swiper from "react-native-swiper"
 import LinearGradient from 'react-native-linear-gradient';
+import {getDataFromServer} from './Networking/Api'
+import {baseUrl,baseUrlImage} from './Networking/Api'
 
 var {height, width} = Dimensions.get('window');
-const baseUrl = "http://172.16.0.170:8000"
-const baseUrlImage = "http://172.16.0.170:8000/storage/"
+
 
 export default class Main extends Component{
 
@@ -31,45 +32,22 @@ export default class Main extends Component{
      }
   }
 
-  // static navigationOptions = ({ navigation }) => {
-  //   return {
-  //       headerTitle: (
-  //         <View style={{ flex: 1,backgroundColor:'transparent',alignItems:'center' }}>
-  //             {/* <Image
-  //             resizeMode="contain"
-  //             style={{ width:width/3,height: '90%'  }}
-  //             source={{uri: "https://www.tutofox.com/wp-content/uploads/2019/10/font_rend.png"}}
-  //           /> */}
-  //           <Text>
-               
-  //           </Text>
-  //         </View>
-          
-  //         ),
-  //       headerTitleStyle: {flex: 1, textAlign: 'center', justifyContent:'center'},
-  //       headerStyle: { backgroundColor:"#f2f2f2" },
-  //     };
-  //   };
+
     
+  refreshDataFromServer(){
+    getDataFromServer().then((news)=>{
+          this.setState({dataNews:news});
+          this.setState({dataBanner:news.banner})
+    }).catch((error)=>{
+          console.log('bi loi ', error)
+          this.setState({dataNews:[]});
+          this.setState({dataBanner:[]})
+
+    });
+
+  }
   componentDidMount(){
-    return fetch(baseUrl+"/api/news")
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log('dulieu:',responseJson)
-      console.log('thme',responseJson.theme.name)
-
-      this.setState({
-        isLoading: false,
-        dataNews: responseJson,
-        dataBanner:responseJson.banner
-      });
-
-    })
-    .catch((error) =>{
-      console.error(error);
-
-    })
-
+    this.refreshDataFromServer();
   }
   render(){
 
@@ -107,7 +85,7 @@ export default class Main extends Component{
         <FlatList
           data={this.state.dataNews.news}
           keyExtractor={this._keyExtractor}
-          renderItem={({item})=>this._renderItem(item)}
+          renderItem={({item,index})=>this._renderItem(item)}
           />
       </SafeAreaView>
       </ScrollView>
@@ -130,7 +108,7 @@ export default class Main extends Component{
     if (this.state.selectTheme==item.theme||this.state.selectTheme==0) {
         
     return(  
-      <TouchableOpacity onPress={(item)=>this.props.navigation.navigate("Details",{news:item}) }>
+      <TouchableOpacity onPress={()=>this.props.navigation.navigate("Details",{data: item})}>
         {console.log('dulieugui',item)}
       <View style={[styles.divnews,styles.shadows]}>
       <Image style={styles.imagenew} source={{

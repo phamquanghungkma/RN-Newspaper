@@ -7,10 +7,9 @@ import { View,
   StyleSheet,
   ScrollView
 } from 'react-native';
+import {baseUrl,baseUrlImage} from '../src/Networking/Api'
 
 var {height, width } = Dimensions.get('window');
-const baseUrl = "http://172.16.0.170:8000"
-const baseUrlImage = "http://172.16.0.170:8000/storage/"
 
 export default class DetailsScreen extends React.Component {
 
@@ -26,12 +25,12 @@ export default class DetailsScreen extends React.Component {
   };
 
   render() {
-    const data = this.props.navigation.getParam('news')
-    console.log('du lieu nhan ',data)
+    const data = this.props.navigation.getParam('data')
+    console.log('debug',data)
     return (
       <ScrollView>
         <View style={{ flex: 1}}>
-          <Image style={{width:width,height:200}} source={{uri: baseUrlImage +data.image}} />
+          <Image style={{width:width,height:200}} source={{uri: baseUrlImage + data.image}} />
           <View style={{padding:10}}>
             <Text style={styles.textDate}>{data.created_at}</Text>
             <Text style={styles.textTitle}>{data.title}</Text>
